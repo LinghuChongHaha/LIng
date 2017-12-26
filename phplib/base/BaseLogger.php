@@ -13,16 +13,17 @@ class BaseLogger{
     public static $errMsg;
     public static $logPath;
 
-    public function __construct() {
-        self::$logPath = Config::$arrConfig['LOG_PATH'];
+    public static function getLogPath() {
+        $logPath = Config::$arrConfig['LOG_PATH'];
         if (empty(self::$logPath)){
             throw new  Exception('missing the log path config');
         }
+        return $logPath;
     }
 
     public static function accessLog($errMsg){
         
-        $logPath = self::$logPath;
+        $logPath = self::getLogPath();
         //split log 
         $logPath = $logPath.'access_'.date('Ymd');
 
@@ -34,7 +35,7 @@ class BaseLogger{
 
     public static function errorLog($errNo, $errMsg) {
         
-        $logPath = self::$logPath;
+        $logPath = self::getLogPath();
         $logPath = $logPath.'error_'.date('Ymd');
         
         $errMsg = date('Y-m-d H:i:s')." ERROR: errNo[$errNo],errMsg:$errMsg";

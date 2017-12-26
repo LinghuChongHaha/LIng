@@ -4,8 +4,7 @@
  * all program access it.*
  */
 include('config/Init.php');
-
-var_dump(Config::$arrConfig);exit;
+var_dump(Controller_Ling::getMapPath());exit;
 try {
     $aplication = new BaseApplication();
     $res = $aplication->run();
