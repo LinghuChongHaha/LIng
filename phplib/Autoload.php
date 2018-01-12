@@ -22,8 +22,11 @@ class Autoload {
         }
 
         //write error log
-        BaseLogger::error(1, 'autoload className:'.$className.' failed'); 
+        if (empty($path)) { 
+            BaseLogger::error(1, 'autoload className:'.$className.' failed'); 
+        }
 
+        return false;
     }
 
 	/***
@@ -31,7 +34,7 @@ class Autoload {
      * auto load user related files*
      * dynamci loading
      * like directorys:
-     * LingActioner, LingData,LingDao, LingData
+     * Action_Ling, Data_Ling,Dao_Ling, Data_Ling
      */
     public static function autoloadDynamicClass($className){
         $separator = '_';
@@ -45,7 +48,7 @@ class Autoload {
         //get the last one
         $fileName = array_pop($arrDirectorys);
         foreach ($arrDirectorys as &$directory){
-           $strPath .= strtolower($directory).'/'; 
+           $strPath .= strtolower($directory).DIRECTORY_SEPARATOR; 
         }
         $strPath .= ucfirst($fileName).'.php';
 
@@ -62,6 +65,7 @@ class Autoload {
             'BaseLogger' => dirname(__FILE__).'/base/BaseLogger.php',
             'BaseRequest' => dirname(__FILE__).'/base/BaseRequest.php',
             'BaseApplication' => dirname(__FILE__).'/base/BaseApplication.php',
+            'BaseError' => dirname(__FILE__).'/base/BaseError.php',
             'Config' => dirname(dirname(__FILE__)).'/Config/Config.php',
         );
     }

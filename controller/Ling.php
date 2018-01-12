@@ -7,7 +7,7 @@ class Controller_Ling {
 
     public static function  getMapPath() {
         return array(
-            'ling/index.php' => 'action/test/index.php',
+           'ling/test/test' => 'action/Test.php',
             //to do
             //add other path
         );

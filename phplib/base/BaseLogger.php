@@ -16,17 +16,22 @@ class BaseLogger{
     public static function getLogPath() {
         $logPath = Config::$arrConfig['LOG_PATH'];
         if (empty(self::$logPath)){
-            throw new  Exception('missing the log path config');
+            throw new  BaseException(BaseError::$systemError, 'missing the log path config');
         }
+        //split log 
+        $logPath = $logPath.'access_'.date('Ymd');
+
         return $logPath;
+    }
+
+    public static function getCommonLogMsg() {
+        $commonLogMsg = '';
+
     }
 
     public static function accessLog($errMsg){
         
         $logPath = self::getLogPath();
-        //split log 
-        $logPath = $logPath.'access_'.date('Ymd');
-
         $errMsg = date('Y-m-d H:i:s').' ACCESS: '.$errMsg;
         error_log($errMsg, 3, $logPath);
 

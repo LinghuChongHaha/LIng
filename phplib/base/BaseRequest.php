@@ -19,11 +19,13 @@ class BaseRequest {
     }
 
     /**
-     * handle url 
+     * get the path uri 
      *
      */
     public static function getPathInfo() {
         $requestUri = $_SERVER['REQUEST_URI'];
+        //wipe off the /
+        $requestUri = substr($requestUri,1);
         $pathInfo = explode('?', $requestUri);
         
         return $pathInfo[0];

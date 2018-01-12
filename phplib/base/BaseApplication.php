@@ -13,6 +13,8 @@ class BaseApplication {
     }
 
     public function runController($urlRoute) {
+        #两种方式，一种是通过controller,找到对应的action
+        #第二种凡是，通过/dictory/file找到对应的action默认寻找
         if (empty($urlRoute)) {
            $urlRoute = $this->defaultRoute; 
         }
