@@ -15,6 +15,7 @@ class Util {
 	 * array(
 	 *  'post' => array('key'=>$value),
 	 *  'get'  => array('key'=>$value),
+     *  'cookie' => ';xx',
 	 *   )
 	 * param : arrFiel 上传文件信息，ex:
 	 * array (
@@ -89,6 +90,11 @@ class Util {
 		$arrPostData = !empty($arrMethodAndParams['post']) ? $arrMethodAndParams['post'] : array();
 		$arrPostData = array_merge($arrPostData,$uploadFile);
 		curl_setopt($curl, CURLOPT_POSTFIELDS, $arrPostData);
+
+        // cookie ,weather set cookie
+        if (!empty($arrMethodAndParams['cookie'])) {
+            curl_setopt($curl, CURLOPT_COOKIE, $arrMethodAndParams['cookie']);
+        }
 
 
 		//exec

@@ -8,10 +8,9 @@ $rootPath = dirname(dirname(__FILE__));
 $rootPath = $rootPath.DIRECTORY_SEPARATOR;
 
 ini_set('display_errors',0);
-ini_set('error_reporting','E_ALL & ~E_NOTICE');
+ini_set('error_reporting',E_ALL & ~E_NOTICE);
 
-define("ROOT", $rootPath);
-
-include(ROOT.'phplib/Autoload.php');
+define("SYS_ROOT", $rootPath);
+include SYS_ROOT.'phplib/Autoload.php';
 
 ?>

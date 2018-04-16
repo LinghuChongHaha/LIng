@@ -10,7 +10,7 @@ class BaseError {
     public static $systemError = 1;
     public static $systemParamError = 2;
     public static $systemLogError = 3;
-
+    public static $systemDbError  = 4;
 }
 
 ?>

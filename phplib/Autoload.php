@@ -10,20 +10,20 @@ class Autoload {
         $classMaps = self::getClassMaps(); 
         $path = $classMaps[$className];
         if (!empty($path)) {
-            include($path);
+            include $path;
             return true;
         }
 
         $dynamicPath = self::autoloadDynamicClass($className);
         if (!empty($dynamicPath)) {
             //suggest use include ranther than include_once
-            include($dynamicPath);
+            include $dynamicPath;
             return true;
         }
 
         //write error log
         if (empty($path)) { 
-            BaseLogger::error(1, 'autoload className:'.$className.' failed'); 
+            BaseLogger::errorLog(1, 'autoload className:'.$className.' failed'); 
         }
 
         return false;
@@ -52,7 +52,7 @@ class Autoload {
         }
         $strPath .= ucfirst($fileName).'.php';
 
-        return ROOT.$strPath;
+        return SYS_ROOT.$strPath;
     } 
 
     /**
@@ -62,11 +62,14 @@ class Autoload {
         return array(
             'BaseRouter' => dirname(__FILE__).'/base/BaseRouter.php',
             'BaseException' => dirname(__FILE__).'/base/BaseException.php',
+            'BaseSystemException' => dirname(__FILE__).'/base/BaseSystemException.php',
             'BaseLogger' => dirname(__FILE__).'/base/BaseLogger.php',
             'BaseRequest' => dirname(__FILE__).'/base/BaseRequest.php',
             'BaseApplication' => dirname(__FILE__).'/base/BaseApplication.php',
             'BaseError' => dirname(__FILE__).'/base/BaseError.php',
             'Config' => dirname(dirname(__FILE__)).'/Config/Config.php',
+            'DbInterface' => dirname(__FILE__).'/db/DbInterface.php',
+            'DbFactory' => dirname(__FILE__).'/db/DbFactory.php',
         );
     }
 

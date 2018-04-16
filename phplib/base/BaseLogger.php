@@ -11,15 +11,17 @@ class BaseLogger{
 
     public static $errNo;
     public static $errMsg;
-    public static $logPath;
 
-    public static function getLogPath() {
-        $logPath = Config::$arrConfig['LOG_PATH'];
-        if (empty(self::$logPath)){
+    /**
+     * @param $type the log type
+     */
+    public static function getLogPath($type) {
+        $logPath = Config::$arrConfig['log_path'];
+        if (empty($logPath)){
             throw new  BaseException(BaseError::$systemError, 'missing the log path config');
         }
         //split log 
-        $logPath = $logPath.'access_'.date('Ymd');
+        $logPath = $logPath.$type.'_'.date('Ymd');
 
         return $logPath;
     }
@@ -38,12 +40,19 @@ class BaseLogger{
 
     }
 
-    public static function errorLog($errNo, $errMsg) {
+    /**
+     *
+     * write the error log
+     * the rd can set the different log file
+     * @param $errNo
+     * @param $errMsg
+     * @param $type the log type
+     */
+    public static function errorLog($errNo, $errMsg, $type = 'system') {
         
-        $logPath = self::getLogPath();
-        $logPath = $logPath.'error_'.date('Ymd');
+        $logPath = self::getLogPath($type.'_error');
         
-        $errMsg = date('Y-m-d H:i:s')." ERROR: errNo[$errNo],errMsg:$errMsg";
+        $errMsg = date('Y-m-d H:i:s')." ERROR: errNo[$errNo],errMsg:$errMsg"."\r\n";
         error_log($errMsg, 3, $logPath);
     }
 }

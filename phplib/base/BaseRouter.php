@@ -20,14 +20,39 @@ class BaseRouter {
      * set the rote according the path
      */
     public static function router() {
+        $actionName = '';
         $strPath = BaseRequest::getPathInfo();
 
+        $routerWay = Config::$arrConfig['router'];
+        $headRoute = Config::$arrConfig['head_route'];
+
+
         //fisrt check the controller weather have the request 
-        $strController = self::getControllerPath($strPath);
-        $strControllerName = self::getControllerName($strController);
-        if (class_exists($strControllerName)) {
-            self::loadAction($strControllerName, $strPath); 
+        if ($routerWay == 'controller') {
+        
+            $strController = self::getControllerPath($strPath, $headRoute);
+            if (empty($strController))
+                $strController = 'index';
+
+            $strControllerName = self::getControllerName($strController);
+            if (class_exists($strControllerName)) {
+                $actionName = self::loadAction($strControllerName, $strPath, $headRoute); 
+            }
+
+            if (empty($actionName)) {
+               throw new BaseSystemException(1, 'load action is empty ,controller:'.$strController);
+            }
+
+
+        } else if ($routerWay == 'path') {
+
+            $actionName = self::getActionNameByPath($strPath);
+            if (empty($actionName))
+                $actionName = 'Action_Index';
+
         }
+
+        return $actionName;
         
     }
 
@@ -37,15 +62,21 @@ class BaseRouter {
      * @desc load the action class according to the controller or the path
      *
      */
-    public static function loadAction($controllerName, $path) {
+    public static function loadAction($controllerName, $path, $headRoute) {
+        //wipe the url head
+        $len = strlen($headRoute) + 1;
+        $path = substr($path, $len);
+        if (empty($path))
+            $path = 'index';
+        
         $arrMapPath = $controllerName::getMapPath();
         
         if (!empty($arrMapPath[$path])) {
             $mapPath = $arrMapPath[$path];
-            $mapPath = ROOT.$mapPath;
+            $filePath = SYS_ROOT.$mapPath;
 
-            if (!is_file($mapPath)) {
-                throw new BaseException(1, 'the path '.$newPath,'error ,no file');
+            if (!is_file($filePath)) {
+                throw new BaseSystemException(1, 'the path '.$newPath,'error ,no file');
             }
             include $mapPath;
             
@@ -53,24 +84,46 @@ class BaseRouter {
 
         } else {
             //没有找到path，要报错
-            throw new BaseException(1, 'controller exists,the path:'.$path .' not fund');
+            throw new BaseSystemException(1, 'controller exists,the path:'.$path .' not fund');
         }
     }
 
     /**
-     * get the controller path from the request path
+     * default
+     * get the action name  from the request path
      */
-    public static function getControllerPath($path) {
-        $strControllerPath = '';
-        $intIndex = 0;
+    public static function getActionNameByPath($path) {
         $strHeadRoute = Config::$arrConfig['HEAD_ROUTE'];
 
-        if (strpos($path,$strHeadRoute) === 0) {
-            // match the head route successfully
-            $intIndex = 1; 
-        } else {
-            // failed,return the first one
-            $intIndex = 0; 
+        if (strpos($path,$strHeadRoute) !== 0) {
+            throw new BaseSystemException(1, 'the url is invalid,missing the url head');
+        }
+
+
+        $arrPath = explode('/',$path);
+        if (empty($arrPath))
+            return '';
+
+        //wipe the url head
+        unset($arrPath[0]);
+
+        array_map('ucfirst', $arrPath);
+        $actionName = implode('_', $arrPath);
+        return $actionName;
+      }
+
+
+
+    /**
+     * by controller
+     * get the controller path from the controller map according the request pathh
+     */
+    public static function getControllerPath($path, $headRoute) {
+        $strControllerPath = '';
+        $intIndex = 1;
+
+        if (strpos($path, $headRoute) !== 0) {
+            throw new BaseSystemException(1, 'the url is invalid,missing the url head');
         }
 
         $arrPath = explode('/',$path);
@@ -85,14 +138,14 @@ class BaseRouter {
     }
 
     /**
-     * @param $path
+     * @param $filePath
      * @desc get the action name 
      */
-    public static function getActionName($path) {
+    public static function getActionName($filePath) {
 
-        $intPoisition = strpos('.', $path);
-        $newPath = substr($path, 0, $intPoisition);
-        $arrPath = explode('/', $path); 
+        $intPosition = strpos($filePath, '.');
+        $newPath = substr($filePath, 0, $intPosition);
+        $arrPath = explode('/', $newPath); 
         $arrPath = array_map('ucfirst', $arrPath);
 
         return implode('_', $arrPath);
